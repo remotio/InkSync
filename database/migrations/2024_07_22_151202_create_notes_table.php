@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('work_id')->constrained()->onDelete('cascade');
+            $table->string('html_path');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
