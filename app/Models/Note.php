@@ -11,7 +11,7 @@ class Note extends Model
     
     protected $fillable = [
         'work_id',
-        'content',
+        'html_path',
         'created_at',
         'updated_at',
         'deleted_at',

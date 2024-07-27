@@ -20,7 +20,7 @@
             <h1 class="text-2xl font-bold">公開ノート一覧</h1>
             <div v-for="work in publicWorks" :key="work.id" class="p-4 mv04 bg-gray-100 rounded">
                 <h2 class="text-xl">
-                    <Link :href="route('work.show',work.id)">{{work.title}}</Link>
+                    <Link :href="route('work.showNote',work.id)">{{work.title}}</Link>
                 </h2>
                 <p>{{work.user.name}}</p>
             </div>
@@ -29,7 +29,9 @@
         <div>
             <h1 class="text-2xl font-bold mt-8">個人ノート一覧</h1>
             <div v-for="work in userWorks" :key="work.id" class="p-4 mv04 bg-gray-100 rounded">
-                <h2 class="text-xl">{{work.title}}</h2>
+                <h2 class="text-xl">
+                    <Link :href="route('work.showNote',work.id)">{{work.title}}</Link>
+                </h2>
             </div>
         </div>
 

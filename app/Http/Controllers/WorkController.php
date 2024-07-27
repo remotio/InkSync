@@ -18,6 +18,10 @@ class WorkController extends Controller
         ]);
     }
     public function showNote(Work $work){
-        return inertia("Work/Show",["work"=>$work]);
+        $note=$work->note;
+        return inertia("Work/ShowNote",[
+            "work"=>$work,
+            'note'=>$note,
+        ]);
     }
 }

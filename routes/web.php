@@ -15,7 +15,7 @@ Route::get('/', function () {
      ]);
  });
 Route::get('/home',[WorkController::class,"index"])->name('home');
-Route::get('/works/{work}',[WorkController::class,"showNote"])->name('work.show');
+Route::get('/works/{work}/note',[WorkController::class,"showNote"])->name('work.showNote');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
