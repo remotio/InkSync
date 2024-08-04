@@ -22,7 +22,7 @@ const props = defineProps({
             <p>{{ note.html_path }}</p>
             <!-- 自分のノートであれば編集ボタンを表示 -->
             <div v-if="work.user_id === auth.user.id">
-                <Link :href="route('note.edit', note.id)" class="text-blue-500 hover:underline">
+                <Link :href="route('workspace', work.id)" class="text-blue-500 hover:underline">
                     編集
                 </Link>
             </div>

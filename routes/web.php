@@ -16,6 +16,10 @@ Route::get('/', function () {
  });
 Route::get('/home',[WorkController::class,"index"])->name('home');
 Route::get('/works/{work}/note',[WorkController::class,"showNote"])->name('work.showNote');
+Route::get('/works/{work}/workspace',[WorkController::class,"openWorkspace"])->name('workspace');
+Route::put('/notes/{work}/note',[WorkController::class,'update'])->name('work.update');
+Route::get('/works/create',[WorkController::class,'createWorkspace'])->name('work.create');
+Route::post('/works',[WorkController::class,'store'])->name('work.store');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

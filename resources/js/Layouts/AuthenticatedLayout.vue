@@ -35,6 +35,9 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('home')" :active="route().current('home')">
                                     Home
                                 </NavLink>
+                                <NavLink :href="route('work.create')" :active="route().current('work.create')">
+                                    新規作成
+                                </NavLink>
                             </div>
                         </div>
 
