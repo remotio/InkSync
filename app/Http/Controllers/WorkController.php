@@ -12,12 +12,23 @@ class WorkController extends Controller
 {
     public function index(){
         $publicWorks=Work::where('is_public',true)->with('user')->get();
-        $userWorks=Work::where('user_id',Auth::id())->get();
+        $userWorks=Auth::check()? Work::where('user_id',Auth::id())->get() : [];
         return Inertia('Work/Home',[
             'publicWorks'=>$publicWorks,
-            'userWorks'=>$userWorks
+            'userWorks'=>$userWorks,
+            'isAuthenticated' => Auth::check(),
         ]);
     }
+    
+    public function myWorks()
+    {
+        $works = Work::with('tags')->where('user_id', auth()->id())->get();
+        return Inertia::render('Work/MyWorks', [
+            'works' => $works,
+        ]);
+
+    }
+    
     public function showNote(Work $work){
         $note=$work->note;
         return Inertia("Work/ShowNote",[
@@ -62,9 +73,10 @@ class WorkController extends Controller
             'description' => 'required|string',
             'html_path' => 'required|string|max:255',
         ]);
+    
         $work->update([
             'title' => $validated['title'],
-            'description' => $validated['description']
+            'description' => $validated['description'],
         ]);
     
         $note = $work->note;
@@ -72,4 +84,23 @@ class WorkController extends Controller
     
         return redirect()->route('home')->with('success', 'Work updated successfully');
     }
+    
+    public function togglePublic(Request $request, Work $work) {
+        $validated = $request->validate([
+            'is_public' => 'required|boolean',
+        ]);
+        $work->update([
+            'is_public' => $validated['is_public'] ?? $work->is_public, 
+        ]);
+    
+        
+    }
+    
+    public function destroy(Work $work)
+    {
+        $work->delete();
+        return redirect()->route('myWorks')->with('success', 'ワークを削除しました。');
+    }
+
+
 }

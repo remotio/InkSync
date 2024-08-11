@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\WorkController;
 
-Route::get('/', function () {
-     return Inertia::render('Welcome', [
-         'canLogin' => Route::has('login'),
-         'canRegister' => Route::has('register'),
-         'laravelVersion' => Application::VERSION,
-         'phpVersion' => PHP_VERSION,
-     ]);
- });
-Route::get('/home',[WorkController::class,"index"])->name('home');
+Route::get('/',[WorkController::class,"index"])->name('home');
 Route::get('/works/{work}/note',[WorkController::class,"showNote"])->name('work.showNote');
 Route::get('/works/{work}/workspace',[WorkController::class,"openWorkspace"])->name('workspace');
-Route::put('/notes/{work}/note',[WorkController::class,'update'])->name('work.update');
+Route::put('/works/{work}/',[WorkController::class,'update'])->name('work.update');
 Route::get('/works/create',[WorkController::class,'createWorkspace'])->name('work.create');
 Route::post('/works',[WorkController::class,'store'])->name('work.store');
+Route::get('/myWorks', [WorkController::class, 'myWorks'])->name('myWorks');
+Route::put('/works/{work}',[WorkController::class,'togglePublic'])->name('work.publish');
+Route::delete('/works/{work}', [WorkController::class, 'destroy'])->name('work.destroy');
+
+
+
+Route::get('/works/myworks',[WorkController::class,'myWorks'])->name('work.myWorks');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

@@ -29,11 +29,11 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
-                                </NavLink>
                                 <NavLink :href="route('home')" :active="route().current('home')">
                                     Home
+                                </NavLink>
+                                <NavLink :href="route('myWorks')" :active="route().current('myWorks')">
+                                    ワーク一覧
                                 </NavLink>
                                 <NavLink :href="route('work.create')" :active="route().current('work.create')">
                                     新規作成
@@ -42,8 +42,8 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
-                            <!-- Settings Dropdown -->
-                            <div class="ms-3 relative">
+                            <!-- ログイン状態のチェック -->
+                            <div v-if="$page.props.auth.user" class="ms-3 relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -61,7 +61,7 @@ const showingNavigationDropdown = ref(false);
                                                 >
                                                     <path
                                                         fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                                                         clip-rule="evenodd"
                                                     />
                                                 </svg>
@@ -76,6 +76,12 @@ const showingNavigationDropdown = ref(false);
                                         </DropdownLink>
                                     </template>
                                 </Dropdown>
+                            </div>
+
+                            <!-- ログインしていない場合の表示 -->
+                            <div v-else class="ms-3 flex items-center space-x-4">
+                                <Link href="/login" class="text-sm text-gray-700 underline">Log in</Link>
+                                <Link href="/register" class="ml-4 text-sm text-gray-700 underline">Register</Link>
                             </div>
                         </div>
 
@@ -125,14 +131,18 @@ const showingNavigationDropdown = ref(false);
 
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
-                        <div class="px-4">
+                        <div v-if="$page.props.auth.user" class="px-4">
                             <div class="font-medium text-base text-gray-800">
                                 {{ $page.props.auth.user.name }}
                             </div>
                             <div class="font-medium text-sm text-gray-500">{{ $page.props.auth.user.email }}</div>
                         </div>
+                        <div v-else class="px-4">
+                            <Link href="/login" class="text-sm text-gray-700 underline">Log in</Link>
+                            <Link href="/register" class="ml-4 text-sm text-gray-700 underline">Register</Link>
+                        </div>
 
-                        <div class="mt-3 space-y-1">
+                        <div v-if="$page.props.auth.user" class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
