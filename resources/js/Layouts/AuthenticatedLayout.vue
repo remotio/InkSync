@@ -15,20 +15,19 @@ const showingNavigationDropdown = ref(false);
         <div class="min-h-screen bg-gray-100">
             <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="w-full mx-auto px-4 sm:px-20 lg:px-30">
                     <div class="flex justify-between h-16">
-                        <div class="flex">
+                        <!-- 左側: ロゴとナビゲーションリンク -->
+                        <div class="flex items-center">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
                                 <Link :href="route('home')">
-                                    <ApplicationLogo
-                                        class="block h-12 w-auto fill-current text-gray-800"
-                                    />
+                                    <ApplicationLogo class="block h-12 w-auto fill-current text-gray-800" />
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div v-if="$page.props.auth.user" class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('home')" :active="route().current('home')">
                                     Home
                                 </NavLink>
@@ -39,11 +38,18 @@ const showingNavigationDropdown = ref(false);
                                     新規作成
                                 </NavLink>
                             </div>
+                            <div v-else class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                <NavLink :href="route('home')" :active="route().current('home')">
+                                    Home
+                                </NavLink>
+                            </div>
+
                         </div>
 
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                        <!-- 右側: ユーザーメニューまたはログイン・登録リンク -->
+                        <div class="hidden sm:flex sm:items-center">
                             <!-- ログイン状態のチェック -->
-                            <div v-if="$page.props.auth.user" class="ms-3 relative">
+                            <div v-if="$page.props.auth.user" class="ml-4 relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -54,7 +60,7 @@ const showingNavigationDropdown = ref(false);
                                                 {{ $page.props.auth.user.name }}
 
                                                 <svg
-                                                    class="ms-2 -me-0.5 h-4 w-4"
+                                                    class="ml-2 -mr-0.5 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20"
                                                     fill="currentColor"
@@ -79,14 +85,14 @@ const showingNavigationDropdown = ref(false);
                             </div>
 
                             <!-- ログインしていない場合の表示 -->
-                            <div v-else class="ms-3 flex items-center space-x-4">
+                            <div v-else class="ml-4 flex items-center space-x-4">
                                 <Link href="/login" class="text-sm text-gray-700 underline">Log in</Link>
-                                <Link href="/register" class="ml-4 text-sm text-gray-700 underline">Register</Link>
+                                <Link href="/register" class="text-sm text-gray-700 underline">Register</Link>
                             </div>
                         </div>
 
-                        <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
+                        <!-- Hamburger (モバイル用) -->
+                        <div class="-mr-2 flex items-center sm:hidden">
                             <button
                                 @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
@@ -94,7 +100,7 @@ const showingNavigationDropdown = ref(false);
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path
                                         :class="{
-                                            hidden: showingNavigationDropdown,
+                                            'hidden': showingNavigationDropdown,
                                             'inline-flex': !showingNavigationDropdown,
                                         }"
                                         stroke-linecap="round"
@@ -104,7 +110,7 @@ const showingNavigationDropdown = ref(false);
                                     />
                                     <path
                                         :class="{
-                                            hidden: !showingNavigationDropdown,
+                                            'hidden': !showingNavigationDropdown,
                                             'inline-flex': showingNavigationDropdown,
                                         }"
                                         stroke-linecap="round"
@@ -124,10 +130,17 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
+                        <ResponsiveNavLink :href="route('home')" :active="route().current('home')">
+                            Home
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="$page.props.auth.user" :href="route('myWorks')" :active="route().current('myWorks')">
+                            ワーク一覧
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="$page.props.auth.user" :href="route('work.create')" :active="route().current('work.create')">
+                            新規作成
                         </ResponsiveNavLink>
                     </div>
+
 
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
@@ -154,7 +167,7 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Heading -->
             <header class="bg-white shadow" v-if="$slots.header">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="w-full mx-auto py-6 px-4 sm:px-4 lg:px-4">
                     <slot name="header" />
                 </div>
             </header>

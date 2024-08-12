@@ -16,11 +16,13 @@ const submit = () => {
 
 <template>
     <Authenticated>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                ワーク新規作成
-            </h2>
-        </template>
+       <template #header>
+           <div class="w-full mx-auto sm:px-20 lg:px-30">
+               <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                   ワーク新規作成
+               </h2>
+           </div>
+       </template>
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
             <form @submit.prevent="submit">
                 <div>

@@ -12,11 +12,13 @@ const props = defineProps({
 
 <template>
     <Authenticated>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ work.title }}
-            </h2>
-        </template>
+       <template #header>
+           <div class="w-full mx-auto sm:px-20 lg:px-30">
+               <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                   {{work.title}}
+               </h2>
+           </div>
+       </template>
 
         <div>
             <p>{{ note.html_path }}</p>

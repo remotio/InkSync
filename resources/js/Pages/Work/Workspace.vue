@@ -31,9 +31,11 @@ watch(
 <template>
     <Authenticated>
        <template #header>
-           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-               IncSync
-           </h2>
+           <div class="w-full mx-auto sm:px-20 lg:px-30">
+               <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                   InkSync
+               </h2>
+           </div>
        </template>
 
         <div>

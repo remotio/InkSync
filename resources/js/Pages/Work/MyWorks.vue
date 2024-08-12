@@ -34,11 +34,23 @@
 <template>
   <Authenticated>
     <template #header>
-     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-         ワーク一覧
-     </h2>
+      <div class="w-full mx-auto sm:px-20 lg:px-30">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+          ワーク一覧
+        </h2>
+      </div>
     </template>
-    <div class="works-container">
+    
+    <!-- ワークが存在しない場合の表示 -->
+    <div v-if="works.length === 0" class="no-works-card">
+      <p class="text-gray-700 mb-4">ノートがまだ作成されていません</p>
+      <Link :href="route('work.create')" class="inline-block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+        ワークを作成
+      </Link>
+    </div>
+
+    <!-- ワークが存在する場合の表示 -->
+    <div v-else class="works-container">
       <div v-for="work in works" :key="work.id" class="work-card">
         <div class="work-info">
           <h3 class="work-title">{{ work.title }}</h3>
@@ -64,6 +76,7 @@
   </Authenticated>
 </template>
 
+
 <style scoped>
 .works-container {
   display: flex;
@@ -82,6 +95,19 @@
   border-radius: 15px;
   padding: 20px;
   border: 1px solid #ccc;
+}
+
+
+.no-works-card{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+
+  padding: 20px;
+  border: 1px solid #ccc;
+  text-align: center;
+  margin-top: 30px;
 }
 
 .work-info {
