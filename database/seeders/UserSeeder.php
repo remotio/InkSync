@@ -18,7 +18,6 @@ class UserSeeder extends Seeder
         'email' => 'seedertest1@gmail.com',
         'email_verified_at'=>new DateTime(),
         'password'=>Hash::make('seedertest1'),
-        'remember_Token'=>'seedertest1',
         'created_at' => new DateTime(),
         'updated_at' => new DateTime(),
         ]);
@@ -28,7 +27,6 @@ class UserSeeder extends Seeder
         'email' => 'seedertest2@gmail.com',
         'email_verified_at'=>new DateTime(),
         'password'=>Hash::make('seedertest2'),
-        'remember_Token'=>'seedertest2',
         'created_at' => new DateTime(),
         'updated_at' => new DateTime(),
         ]);
