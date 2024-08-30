@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+//Gemini関連
+use App\Http\Controllers\ChatController;
+
+Route::post('/chat', [ChatController::class, 'sendChat'])->name('chat.send');
