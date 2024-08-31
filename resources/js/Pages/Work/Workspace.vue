@@ -1,7 +1,7 @@
 <script setup>
 import { defineProps } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 import axios from 'axios'; 
 import Authenticated from '@/Layouts/AuthenticatedLayout.vue';
 
@@ -16,7 +16,6 @@ const form = useForm({
     html_path: props.note.html_path,
 });
 
-
 const submit = () => {
     form.put(route('work.update', props.work.id));
 };
@@ -29,12 +28,20 @@ watch(
   { immediate: true }
 );
 
-//チャット関連
-import { onMounted } from 'vue';
+// チャット関連
 const chatMessages = ref([]);
 const userInput = ref('');
+const chatContainer = ref(null);
 
-//履歴の表示
+const scrollToEnd = () => {
+    nextTick(() => {
+        if (chatContainer.value) {
+            chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+        }
+    });
+};
+
+// 履歴の表示
 onMounted(async () => {
     try {
         const response = await axios.get(route('chat.getHistory'), {
@@ -48,6 +55,7 @@ onMounted(async () => {
             text: msg.message
         }));
 
+        scrollToEnd();
     } catch (error) {
         console.error('チャット履歴の取得エラー: ', error);
     }
@@ -58,7 +66,6 @@ const sendMessage = async () => {
         const userInputCopy = userInput.value;
         userInput.value = '';
         chatMessages.value.push({ sender: 'user', text: userInputCopy });
-        
 
         try {
             const response = await axios.post(route('chat.send'), {
@@ -66,28 +73,25 @@ const sendMessage = async () => {
                 message: userInputCopy,
             });
 
-        chatMessages.value.push({ sender: 'gemini', text: response.data.message });
-
+            chatMessages.value.push({ sender: 'gemini', text: response.data.message });
         } catch (error) {
             console.error('APIリクエストエラー: ', error);
             chatMessages.value.push({ sender: 'system', text: 'エラーが発生しました' });
         }
 
+        scrollToEnd();
     }
 };
-
-
-
 </script>
 
 <template>
     <div class="flex">
         <!--チャット機能-->
-        <div class="w-1/2 border-r p-4 h-screen overflow-y-auto">
+        <div class="w-1/2 border-r p-4 h-screen overflow-y-auto" ref="chatContainer">
             <!-- チャットエリア -->
             <div v-for="(msg, index) in chatMessages" :key="index" :class="['mb-2', msg.sender === 'user' ? 'text-right' : 'text-left']">
                 <div :class="['inline-block', 'p-2', 'rounded-lg', 'max-w-xs', msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black']">
-                    <strong>{{ msg.sender }}:</strong> {{ msg.text }}
+                    {{ msg.text }}
                 </div>
             </div>
 
