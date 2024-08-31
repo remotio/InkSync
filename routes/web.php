@@ -22,5 +22,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+use Gemini\Laravel\Facades\Gemini;
+
+Route::get('/gemini-test', function () {
+    // Geminiを使用してコンテンツを生成
+    $result = Gemini::geminiPro()->generateContent('日本語も対応しているの？');
+    
+    // 結果を表示
+    return $result->text(); // Hello! How can I assist you today?
+});
+
 
 require __DIR__.'/auth.php';
