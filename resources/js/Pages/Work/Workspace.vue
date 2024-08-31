@@ -30,42 +30,65 @@ watch(
 );
 
 //チャット関連
+import { onMounted } from 'vue';
 const chatMessages = ref([]);
 const userInput = ref('');
 
+//履歴の表示
+onMounted(async () => {
+    try {
+        const response = await axios.get(route('chat.getHistory'), {
+            params: {
+                work_id: props.work.id,
+            }
+        }); 
+
+        chatMessages.value = response.data.history.map(msg => ({
+            sender: msg.is_user ? 'user' : 'gemini',
+            text: msg.message
+        }));
+
+    } catch (error) {
+        console.error('チャット履歴の取得エラー: ', error);
+    }
+});
+
 const sendMessage = async () => {
     if (userInput.value.trim() !== '') {
-        // ユーザーのメッセージをチャットに追加
-        chatMessages.value.push({ sender: 'user', text: userInput.value });
+        const userInputCopy = userInput.value;
+        userInput.value = '';
+        chatMessages.value.push({ sender: 'user', text: userInputCopy });
+        
 
         try {
-            // Gemini APIへのリクエスト
-            const response = await axios.post('/api/chat', {
-                message: userInput.value,
+            const response = await axios.post(route('chat.send'), {
+                work_id: props.work.id,
+                message: userInputCopy,
             });
 
-            // レスポンスをチャットに追加
-            chatMessages.value.push({ sender: 'gemini', text: response.data.message });
+        chatMessages.value.push({ sender: 'gemini', text: response.data.message });
 
         } catch (error) {
             console.error('APIリクエストエラー: ', error);
             chatMessages.value.push({ sender: 'system', text: 'エラーが発生しました' });
         }
 
-        // ユーザー入力をクリア
-        userInput.value = '';
     }
 };
+
+
 
 </script>
 
 <template>
     <div class="flex">
         <!--チャット機能-->
-        <div class="w-1/2 border-r p-4">
+        <div class="w-1/2 border-r p-4 h-screen overflow-y-auto">
             <!-- チャットエリア -->
-            <div v-for="(msg, index) in chatMessages" :key="index" class="mb-2">
-                <strong>{{ msg.sender }}:</strong> {{ msg.text }}
+            <div v-for="(msg, index) in chatMessages" :key="index" :class="['mb-2', msg.sender === 'user' ? 'text-right' : 'text-left']">
+                <div :class="['inline-block', 'p-2', 'rounded-lg', 'max-w-xs', msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black']">
+                    <strong>{{ msg.sender }}:</strong> {{ msg.text }}
+                </div>
             </div>
 
             <!-- 入力エリア -->
@@ -73,8 +96,8 @@ const sendMessage = async () => {
             <button @click="sendMessage" class="mt-2 p-2 bg-blue-500 text-white rounded">送信</button>
         </div>
 
+        <!--ノート機能-->
         <div class="w-1/2 p-4">
-            <!--ノート機能-->
             <h1 class="text-2xl font-bold">ノートを編集</h1>
             <form @submit.prevent="submit">
                 <div>
@@ -99,3 +122,29 @@ const sendMessage = async () => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.max-w-xs {
+    max-width: 90%;
+}
+
+.bg-blue-500 {
+    background-color: #4299e1;
+}
+
+.bg-gray-300 {
+    background-color: #e2e8f0;
+}
+
+.rounded-lg {
+    border-radius: 1rem; 
+}
+</style>

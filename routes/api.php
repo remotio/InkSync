@@ -22,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 use App\Http\Controllers\ChatController;
 
 Route::post('/chat', [ChatController::class, 'sendChat'])->name('chat.send');
+Route::get('/chat/history', [ChatController::class, 'getHistory'])->name('chat.getHistory');
