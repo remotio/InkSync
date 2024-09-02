@@ -59,6 +59,7 @@ onMounted(async () => {
     } catch (error) {
         console.error('チャット履歴の取得エラー: ', error);
     }
+    
 });
 
 const sendMessage = async () => {
@@ -85,70 +86,74 @@ const sendMessage = async () => {
 </script>
 
 <template>
-    <div class="flex">
-        <!--チャット機能-->
-        <div class="w-1/2 border-r p-4 h-screen overflow-y-auto" ref="chatContainer">
-            <!-- チャットエリア -->
-            <div v-for="(msg, index) in chatMessages" :key="index" :class="['mb-2', msg.sender === 'user' ? 'text-right' : 'text-left']">
-                <div :class="['inline-block', 'p-2', 'rounded-lg', 'max-w-xs', msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black']">
-                    {{ msg.text }}
+    <Authenticated>
+       <template #header>
+           <div class="w-full mx-auto sm:px-20 lg:px-30">
+               <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                   {{work.title}}
+               </h2>
+           </div>
+       </template>
+        <div class="flex">
+            <!--チャット機能-->
+            <div class="w-1/2 border-r p-4 h-screen flex flex-col">
+                <!-- チャット履歴 -->
+                <div class="flex-1 overflow-y-auto" ref="chatContainer">
+                    <div v-for="(msg, index) in chatMessages" :key="index" :class="['mb-2', msg.sender === 'user' ? 'text-right' : 'text-left']">
+                        <div :class="['inline-block', 'p-2', 'rounded-lg', 'max-w-xs', msg.sender === 'user' ? 'bg-lightblue text-black' : 'bg-gray-200 text-black']">
+                            {{ msg.text }}
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- 入力エリア -->
+                <div class="sticky bottom-0 bg-white p-4">
+                    <input v-model="userInput" type="text" class="border rounded p-2 w-full" placeholder="メッセージを入力..." @keyup.enter="sendMessage" />
+                    <button @click="sendMessage" class="mt-2 p-2 bg-blue-500 text-white rounded">送信</button>
                 </div>
             </div>
-
-            <!-- 入力エリア -->
-            <input v-model="userInput" type="text" class="border rounded p-2 w-full" placeholder="メッセージを入力..." @keyup.enter="sendMessage" />
-            <button @click="sendMessage" class="mt-2 p-2 bg-blue-500 text-white rounded">送信</button>
+    
+            <!--ノート機能-->
+            <div class="w-1/2 p-4">
+                <h1 class="text-2xl font-bold">ノートを編集</h1>
+                <form @submit.prevent="submit">
+                    <div>
+                        <label for="title">タイトル</label>
+                        <input v-model="form.title" id="title" type="text" class="block w-full mt-1" required />
+                    </div>
+    
+                    <div class="mt-4">
+                        <label for="description">概要</label>
+                        <textarea v-model="form.description" id="description" class="block w-full mt-1" required></textarea>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="html_path">内容</label>
+                        <textarea v-model="form.html_path" id="html_path" class="block w-full mt-1" required></textarea>
+                    </div>
+    
+                    <div class="mt-4">
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">更新</button>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <!--ノート機能-->
-        <div class="w-1/2 p-4">
-            <h1 class="text-2xl font-bold">ノートを編集</h1>
-            <form @submit.prevent="submit">
-                <div>
-                    <label for="title">タイトル</label>
-                    <input v-model="form.title" id="title" type="text" class="block w-full mt-1" required />
-                </div>
-
-                <div class="mt-4">
-                    <label for="description">概要</label>
-                    <textarea v-model="form.description" id="description" class="block w-full mt-1" required></textarea>
-                </div>
-                
-                <div class="mt-4">
-                    <label for="html_path">内容</label>
-                    <textarea v-model="form.html_path" id="html_path" class="block w-full mt-1" required></textarea>
-                </div>
-
-                <div class="mt-4">
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">更新</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    </Authenticated>
 </template>
 
+
 <style scoped>
-.text-right {
-    text-align: right;
-}
-
-.text-left {
-    text-align: left;
-}
-
 .max-w-xs {
     max-width: 90%;
 }
 
-.bg-blue-500 {
-    background-color: #4299e1;
+.bg-lightblue {
+    background-color: #cfe8fc;
 }
 
-.bg-gray-300 {
-    background-color: #e2e8f0;
-}
-
-.rounded-lg {
-    border-radius: 1rem; 
+.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 0;
 }
 </style>
