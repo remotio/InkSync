@@ -8,4 +8,8 @@ use Inertia\Inertia;
 
 class NoteController extends Controller
 {
+    public function showTestNote()
+    {
+        return inertia('Work/Editor'); 
+    }
 }

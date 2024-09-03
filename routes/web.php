@@ -32,5 +32,8 @@ Route::get('/gemini-test', function () {
     return $result->text(); // Hello! How can I assist you today?
 });
 
+use App\Http\Controllers\NoteController;
+Route::get('/testNote', [NoteController::class, 'showTestNote'])->name('testNote');
+
 
 require __DIR__.'/auth.php';
