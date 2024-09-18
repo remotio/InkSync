@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, nextTick } from 'vue';
-import { defineProps,Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Editor } from '@toast-ui/editor';
 import { marked } from 'marked';
 import '@toast-ui/editor/dist/toastui-editor.css';
