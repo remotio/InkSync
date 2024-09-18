@@ -1,9 +1,13 @@
 <script setup>
-import { defineProps } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, watch, onMounted, nextTick } from 'vue';
+import { defineProps,Head, Link, useForm } from '@inertiajs/vue3';
+import { Editor } from '@toast-ui/editor';
+import { marked } from 'marked';
+import '@toast-ui/editor/dist/toastui-editor.css';
 import axios from 'axios'; 
 import Authenticated from '@/Layouts/AuthenticatedLayout.vue';
+import MarkdownEditor from '@/Components/MarkdownEditor.vue';
+import debounce from 'lodash/debounce';
 
 const props = defineProps({
     work: Object,
@@ -13,20 +17,25 @@ const props = defineProps({
 const form = useForm({
     title: props.work.title,
     description: props.work.description,  
-    html_path: props.note.html_path,
 });
 
-const submit = () => {
-    form.put(route('work.update', props.work.id));
-};
+
+let html_path= props.note.html_path;
+const markdownContent = ref(html_path);
 
 watch(
-  () => props.work.title,
-  (newTitle) => {
-    document.title = newTitle;
-  },
-  { immediate: true }
+    [() => form.title, () => form.description, () => markdownContent.value], 
+    debounce(async ([newTitle, newDescription, newHtmlPath]) => {
+        html_path = newHtmlPath;
+        await axios.put(route('work.update', props.work.id), {
+            title: newTitle,
+            description: newDescription,
+            html_path: newHtmlPath,
+        });
+    }, 1000) 
 );
+
+
 
 // チャット関連
 const chatMessages = ref([]);
@@ -62,6 +71,11 @@ onMounted(async () => {
     
 });
 
+// Geminiの返答をマークダウン化
+const renderMarkdown = (content) => {
+  return marked(content);
+};
+
 const sendMessage = async () => {
     if (userInput.value.trim() !== '') {
         const userInputCopy = userInput.value;
@@ -84,27 +98,47 @@ const sendMessage = async () => {
     }
 };
 </script>
+<script>
+    export default {
+      components: {
+        MarkdownEditor,
+  }
+};
+</script>
 
 <template>
     <Authenticated>
-       <template #header>
-           <div class="w-full mx-auto sm:px-20 lg:px-30">
-               <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                   {{work.title}}
-               </h2>
-           </div>
-       </template>
-        <div class="flex">
+        <template #header>
+            <div class="w-full mx-auto sm:px-20 lg:px-30">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    {{form.title}}
+                </h2>
+            </div>
+        </template>
+
+        <div class="flex h-screen">
             <!--チャット機能-->
-            <div class="w-1/2 border-r p-4 h-screen flex flex-col">
-                <!-- チャット履歴 -->
+          <div class="w-1/2 border-r p-4 h-full flex flex-col">
                 <div class="flex-1 overflow-y-auto" ref="chatContainer">
-                    <div v-for="(msg, index) in chatMessages" :key="index" :class="['mb-2', msg.sender === 'user' ? 'text-right' : 'text-left']">
-                        <div :class="['inline-block', 'p-2', 'rounded-lg', 'max-w-xs', msg.sender === 'user' ? 'bg-lightblue text-black' : 'bg-gray-200 text-black']">
-                            {{ msg.text }}
-                        </div>
+                    <div
+                        v-for="(msg, index) in chatMessages"
+                        :key="index"
+                        :class="['mb-2', msg.sender === 'user' ? 'text-right' : 'text-left']"
+                    >
+                    <!-- Geminiの返答にマークダウンを適用 -->
+                    <div
+                        v-if="msg.sender === 'gemini'"
+                        class="inline-block p-2 rounded-lg max-w-xs bg-gray-200 text-black"
+                        v-html="renderMarkdown(msg.text)"
+                    ></div>
+                    <div
+                        v-else
+                        class="inline-block p-2 rounded-lg max-w-xs bg-lightblue text-black"
+                    >
+                        {{ msg.text }}
                     </div>
-                </div>
+              </div>
+            </div>
     
                 <!-- 入力エリア -->
                 <div class="sticky bottom-0 bg-white p-4">
@@ -112,35 +146,29 @@ const sendMessage = async () => {
                     <button @click="sendMessage" class="mt-2 p-2 bg-blue-500 text-white rounded">送信</button>
                 </div>
             </div>
-    
+
             <!--ノート機能-->
-            <div class="w-1/2 p-4">
-                <h1 class="text-2xl font-bold">ノートを編集</h1>
+            <div class="w-1/2 p-4 h-full">
                 <form @submit.prevent="submit">
                     <div>
                         <label for="title">タイトル</label>
                         <input v-model="form.title" id="title" type="text" class="block w-full mt-1" required />
                     </div>
-    
+
                     <div class="mt-4">
                         <label for="description">概要</label>
                         <textarea v-model="form.description" id="description" class="block w-full mt-1" required></textarea>
                     </div>
-                    
-                    <div class="mt-4">
+
+                    <div class="mt-4 flex items-center justify-between">
                         <label for="html_path">内容</label>
-                        <textarea v-model="form.html_path" id="html_path" class="block w-full mt-1" required></textarea>
                     </div>
-    
-                    <div class="mt-4">
-                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">更新</button>
-                    </div>
+                        <MarkdownEditor v-model="markdownContent" />
                 </form>
             </div>
         </div>
     </Authenticated>
 </template>
-
 
 <style scoped>
 .max-w-xs {
