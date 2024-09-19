@@ -10,9 +10,11 @@ const props = defineProps({
     auth: Object
 });
 
+
 const renderMarkdown = (content) => {
-    return marked(content);
+  return marked(content||'');
 };
+
 </script>
 
 <template>
