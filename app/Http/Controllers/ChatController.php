@@ -9,14 +9,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Models\Chat;
 
-//デバッグ用
-use Illuminate\Support\Facades\Log;
-
 class ChatController extends Controller
 {
     public function sendChat(Request $request)
     {
-        \Log::info('user input', ['variable' => $request]);
         $message = $request->input('message');
         Chat::create([
             'work_id'=>$request->input('work_id'),

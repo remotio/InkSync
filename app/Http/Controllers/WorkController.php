@@ -68,23 +68,27 @@ class WorkController extends Controller
     }
     
     public function update(Request $request, Work $work) {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'html_path' => 'required|string|max:255',
-        ]);
+            \Log::info($request->all());
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'html_path' => 'required|string|max:255',
+            ]);
     
-        $work->update([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-        ]);
+            $work->update([
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+            ]);
+            $note = $work->note;
+            $note->update(['html_path' => $validated['html_path']]);
     
-        $note = $work->note;
-        $note->update(['html_path' => $validated['html_path']]);
-    
-        return redirect()->route('home')->with('success', 'Work updated successfully');
+            return redirect()->route('home')->with('success', 'Work updated successfully');
+        } catch (\Exception $e) {
+            return response()->json(['error' => '更新に失敗しました'], 500);
+        }
     }
-    
+
     public function togglePublic(Request $request, Work $work) {
         $validated = $request->validate([
             'is_public' => 'required|boolean',

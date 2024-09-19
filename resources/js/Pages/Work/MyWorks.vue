@@ -1,34 +1,34 @@
 <script setup>
-  import { defineProps } from 'vue';
-  import { Inertia } from '@inertiajs/inertia';
-  import Authenticated from '@/Layouts/AuthenticatedLayout.vue';
-  
-  const props = defineProps({
-    works: Array
-  });
-  
-  const confirmDelete = (id) => {
-    if (confirm('このワークを削除してもよろしいですか？')) {
-      Inertia.delete(route('work.destroy', id));
-    }
-  };
-  
+import { defineProps } from 'vue';
+import { Inertia } from '@inertiajs/inertia';
+import Authenticated from '@/Layouts/AuthenticatedLayout.vue';
 
-  
-  const togglePublic = async (id, isPublic) => {
-    const response = await Inertia.put(route('work.publish', id), { is_public: isPublic });
-  };
-  
-  
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  };
-  
+const props = defineProps({
+  works: Array
+});
+
+const confirmDelete = (id) => {
+  if (confirm('このワークを削除してもよろしいですか？')) {
+    Inertia.delete(route('work.destroy', id));
+  }
+};
+
+const togglePublic = async (id, isPublic) => {
+  await Inertia.put(route('work.publish', id), { is_public: isPublic });
+};
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('ja-JP', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+};
+
+const goToNotePage = (id) => {
+  Inertia.get(route('work.showNote', id));
+};
 </script>
 
 <template>
@@ -40,7 +40,7 @@
         </h2>
       </div>
     </template>
-    
+
     <!-- ワークが存在しない場合の表示 -->
     <div v-if="works.length === 0" class="no-works-card">
       <p class="text-gray-700 mb-4">ノートがまだ作成されていません</p>
@@ -51,9 +51,16 @@
 
     <!-- ワークが存在する場合の表示 -->
     <div v-else class="works-container">
-      <div v-for="work in works" :key="work.id" class="work-card">
+      <div
+        v-for="work in works"
+        :key="work.id"
+        class="work-card"
+        @click="goToNotePage(work.id)" 
+      >
         <div class="work-info">
-          <h3 class="work-title">{{ work.title }}</h3>
+          <h3 class="work-title">
+            <a :href="route('work.showNote', work.id)" class="text-blue-600 hover:underline">{{ work.title }}</a> 
+          </h3>
           <div v-if="work.tags" class="work-tags">
             <span v-for="tag in work.tags" :key="tag.id" class="work-tag">{{ tag.name }}</span>
           </div>
@@ -69,13 +76,12 @@
             />
             公開
           </label>
-          <button class="delete-button" @click="confirmDelete(work.id)">削除する</button>
+          <button class="delete-button" @click.stop="confirmDelete(work.id)">削除する</button>
         </div>
       </div>
     </div>
   </Authenticated>
 </template>
-
 
 <style scoped>
 .works-container {
@@ -95,15 +101,14 @@
   border-radius: 15px;
   padding: 20px;
   border: 1px solid #ccc;
+  cursor: pointer;
 }
 
-
-.no-works-card{
+.no-works-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: white;
-
   padding: 20px;
   border: 1px solid #ccc;
   text-align: center;
