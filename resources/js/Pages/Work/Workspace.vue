@@ -73,7 +73,7 @@ onMounted(async () => {
 
 // Geminiの返答をマークダウン化
 const renderMarkdown = (content) => {
-  return marked(content);
+  return marked(content||'');
 };
 
 const sendMessage = async () => {
@@ -129,7 +129,7 @@ const sendMessage = async () => {
                     <div
                         v-if="msg.sender === 'gemini'"
                         class="inline-block p-2 rounded-lg max-w-xs bg-gray-200 text-black"
-                        v-html="renderMarkdown(msg.text)"
+                        v-html="renderMarkdown(msg.text||'')"
                     ></div>
                     <div
                         v-else
